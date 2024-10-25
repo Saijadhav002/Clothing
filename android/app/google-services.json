@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "742240589315",
+    "project_id": "clothing-authentication",
+    "storage_bucket": "clothing-authentication.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:742240589315:android:94417c111eb96263b72036",
+        "android_client_info": {
+          "package_name": "com.clothing"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "742240589315-k3jv1i66nltumr5fk1mcpgt9l20i0up2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABIjqJGcMlWIZjqdOn4Qo-DUpxbZFSKy0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "742240589315-k3jv1i66nltumr5fk1mcpgt9l20i0up2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
