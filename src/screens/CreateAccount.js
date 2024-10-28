@@ -1,5 +1,5 @@
 import { View, Text, ImageBackground, StyleSheet, Image, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView, StatusBar, ActivityIndicator, PermissionsAndroid } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import LinearGradient from 'react-native-linear-gradient';
 import CommonTextInput from '../components/CommonTextInput';
@@ -7,22 +7,50 @@ import CommonButton from '../components/CommonButton';
 import { useNavigation } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CreateAccount = () => {
     const navigation = useNavigation();
-
     const [email, setEmail] = useState('');
     const [passWord, setPassword] = useState('');
-    const [loading, setLoading] = useState(false); // Loading state
+    const [loading, setLoading] = useState(false);
     const [imageData, setimageData] = useState('');
+
+    useEffect(() => {
+        const loadImageUri = async () => {
+            try {
+                const uri = await AsyncStorage.getItem('profileImage');
+                if (uri) setimageData(uri);
+            } catch (error) {
+                console.error("Failed to load the image URI:", error);
+            }
+        };
+        loadImageUri();
+        
+    }, []);
+
+    useEffect(() => {
+        const saveEmail = async () => {
+            if (email.length > 0) {
+                try {
+                    await AsyncStorage.setItem('Name', email);
+                    console.log("Name saved successfully");
+                } catch (error) {
+                    console.error("Failed to save the Name:", error);
+                }
+            }
+        };
+        saveEmail();
+    }, [email]);
 
     const handleDoneClick = () => {
         signUpWithEmail(email, passWord);
-    }
+    };
+
     const handleBackNavigation = () => navigation.navigate("OnBoarding");
 
     const signUpWithEmail = async (email, password) => {
-        setLoading(true); // Set loading to true when starting API call
+        setLoading(true);
         try {
             const userCredential = await auth().createUserWithEmailAndPassword(email, password);
             const user = userCredential.user;
@@ -48,7 +76,16 @@ const CreateAccount = () => {
                     console.error('Error code:', error.code, 'Message:', error.message);
             }
         } finally {
-            setLoading(false); // Set loading to false after API call
+            setLoading(false);
+        }
+    };
+
+    const saveImageUri = async (uri) => {
+        try {
+            await AsyncStorage.setItem('profileImage', uri);
+            console.log("Image URI saved successfully");
+        } catch (error) {
+            console.error("Failed to save the image URI:", error);
         }
     };
 
@@ -80,8 +117,9 @@ const CreateAccount = () => {
                 } else if (response.errorCode) {
                     console.error('ImagePicker Error:', response.errorMessage);
                 } else if (response.assets) {
-                    console.log('Selected image:', response.assets[0].uri);
-                    setimageData(response.assets[0].uri);
+                    const uri = response.assets[0].uri;
+                    setimageData(uri);
+                    saveImageUri(uri);
                 }
             });
         } else {
@@ -90,24 +128,22 @@ const CreateAccount = () => {
     };
 
     const openGallery = () => {
-        launchImageLibrary(
-            { mediaType: 'photo' },
-            (response) => {
-                if (response.didCancel) {
-                    console.log('User cancelled image picker');
-                } else if (response.errorCode) {
-                    console.error('ImagePicker Error:', response.errorMessage);
-                } else if (response.assets) {
-                    console.log('Selected image:', response.assets[0].uri);
-                }
+        launchImageLibrary({ mediaType: 'photo' }, (response) => {
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+            } else if (response.errorCode) {
+                console.error('ImagePicker Error:', response.errorMessage);
+            } else if (response.assets) {
+                const uri = response.assets[0].uri;
+                setimageData(uri);
+                saveImageUri(uri);
             }
-        );
+        });
     };
 
     return (
         <>
             <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
-
             <LinearGradient
                 colors={['#F6F7ED', '#CDEDF8', '#F5C8F1']}
                 start={{ x: 0.3, y: 0.3 }}
@@ -145,8 +181,6 @@ const CreateAccount = () => {
                                     secureTextEntry={true}
                                     extraStyles={{ paddingHorizontal: scale(15), borderRadius: moderateScale(50) }}
                                 />
-
-                                {/* Loader */}
                                 {loading ? (
                                     <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: verticalScale(30) }} />
                                 ) : (
@@ -214,24 +248,18 @@ const styles = StyleSheet.create({
         height: verticalScale(70),
     },
     uploadedImage: {
-        borderRadius: 50, // half of width/height for a circle
+        borderRadius: 50,
         width: scale(80),
         height: verticalScale(80),
         backgroundColor: "black",
         borderWidth: scale(6),
         borderColor: "white",
-        // iOS shadow properties
         shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
+        shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 3.5,
-        // Android elevation
         elevation: 5,
     },
-    
 });
 
 export default CreateAccount;
