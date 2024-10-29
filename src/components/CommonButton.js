@@ -5,7 +5,7 @@ import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 const CommonButton = (props) => {
     return (
-        <TouchableOpacity onPress={() => props.onPress()} style={[Styles.parentContainer, props.extraStyles]}>
+        <TouchableOpacity onPress={() => props.onPress ? props.onPress() : console.log("icon pressed!")} style={[Styles.parentContainer, props.extraStyles]}>
             <Text style={[Styles.textStyle, { ...props.extraTextStyles }]}>{props.title ? props.title : "CommonButton"}</Text>
         </TouchableOpacity>
     )

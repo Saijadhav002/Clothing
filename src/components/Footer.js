@@ -1,18 +1,17 @@
-// components/Footer.js
-
 import React from 'react';
-import { View, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
-
-
+import { useRoute } from '@react-navigation/native';
 
 const Footer = ({ navigation }) => {
+    const route = useRoute();
+
     const navbarIcons = [
         {
             id: 0,
             src: "home",
-            screen: "VouchersScreen" // Replace with your actual screen name
+            screen: "Dashboard" // Replace with your actual screen name
         },
         {
             id: 1,
@@ -41,7 +40,6 @@ const Footer = ({ navigation }) => {
     };
 
     return (
-        // <View style={styles.footerContainer}>
         <LinearGradient
             colors={['#F6F7ED', '#CDEDF8', '#F5C8F1']}
             start={{ x: 0, y: 0.9 }}
@@ -54,9 +52,12 @@ const Footer = ({ navigation }) => {
                     onPress={() => handleIconPress(item.screen)}
                     style={styles.iconContainer}
                 >
-
-                    <Icon name={item.src} color="" size={19} style={styles.footerIcon} />
-
+                    <Icon
+                        name={item.src}
+                        color={route.name === item.screen ? "grey" : "#155EEF"}
+                        size={19}
+                        style={styles.footerIcon}
+                    />
                 </TouchableOpacity>
             ))}
         </LinearGradient>
@@ -69,7 +70,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         alignItems: 'center',
         padding: 10,
-        backgroundColor: 'transparent', // Change to your desired background color
+        backgroundColor: 'transparent',
         borderTopWidth: 1,
         borderTopColor: '#ccc',
     },
@@ -78,9 +79,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     footerIcon: {
-        width: 30, // Change to your desired icon size
+        width: 30,
         height: 30,
-        color: "blue"
     },
 });
 
